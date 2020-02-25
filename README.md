@@ -9,7 +9,7 @@ There are several routes:
 3. v1/users/logout - This will login a user. Pass in email address
 4. v1/users/delete - This will delete a user. Pass in email address
 
-# Todos
+## Todos
 There are several routes:
 1. POST v1/todos - This will create a new todo. Pass in the todo string and done (true/false)
 2. GET v1/todos - This will get a list of todos for the current user. Optional: Pass in limit and offset
