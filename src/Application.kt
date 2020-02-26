@@ -1,5 +1,6 @@
 package com.timilehin
 
+import com.timilehin.Routes.todos
 import com.timilehin.Routes.users
 import com.timilehin.auth.JwtService
 import com.timilehin.auth.MySession
@@ -61,6 +62,7 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         users(db, jwtService, hashFunction)
+        todos(db)
     }
 }
 
