@@ -1,5 +1,6 @@
 package com.timilehin.repository
 
+import com.timilehin.models.Todo
 import com.timilehin.models.User
 import com.timilehin.repository.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.ResultRow
@@ -41,5 +42,38 @@ class TodoRepository : Repository {
             passwordHash = row[Users.passwordHash]
         )
     }
+
+    override suspend fun addTodo(userId: Int, todo: String, done: Boolean): Todo? {
+        var statement : InsertStatement<Number>? = null
+        dbQuery {
+            statement = Todos.insert {
+                it[Todos.userId] = userId
+                it[Todos.todo] = todo
+                it[Todos.done] = done
+            }
+        }
+        return rowToTodo(statement?.resultedValues?.get(0))
+    }
+
+    override suspend fun getTodos(userId: Int): List<Todo> {
+        return dbQuery {
+            Todos.select {
+                Todos.userId.eq((userId))
+            }.mapNotNull { rowToTodo(it) }
+        }
+    }
+
+    private fun rowToTodo(row: ResultRow?): Todo? {
+        if (row == null) {
+            return null
+        }
+        return Todo(
+            id = row[Todos.id],
+            userId = row[Todos.userId],
+            todo = row[Todos.todo],
+            done = row[Todos.done]
+        )
+    }
+
 
 }
