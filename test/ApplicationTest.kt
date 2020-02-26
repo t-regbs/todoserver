@@ -1,5 +1,6 @@
 package com.raywenderlich
 
+import com.timilehin.module
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.request.*
@@ -12,8 +13,10 @@ import io.ktor.gson.*
 import io.ktor.features.*
 import kotlin.test.*
 import io.ktor.server.testing.*
+import io.ktor.util.KtorExperimentalAPI
 
 class ApplicationTest {
+    @KtorExperimentalAPI
     @Test
     fun testRoot() {
         withTestApplication({ module(testing = true) }) {
