@@ -51,6 +51,44 @@ fun Route.todos(db: Repository) {
                 call.respond(HttpStatusCode.BadRequest, "Problems Saving Todo")
             }
         }
+
+        get<TodoRoute> {
+            val user = call.sessions.get<MySession>()?.let { db.findUser(it.userId) }
+            if (user == null) {
+                call.respond(HttpStatusCode.BadRequest, "Problems retrieving User")
+                return@get
+            }
+            try {
+                val todos = db.getTodos(user.userId)
+                call.respond(todos)
+            } catch (e: Throwable) {
+                application.log.error("Failed to get Todos", e)
+                call.respond(HttpStatusCode.BadRequest, "Problems getting Todos")
+            }
+        }
+
+        delete<TodoRoute> {
+            val todosParameters = call.receive<Parameters>()
+            if (!todosParameters.contains("id")) {
+                return@delete call.respond(HttpStatusCode.BadRequest, "Missing Todo Id")
+            }
+            val todoId =
+                todosParameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing Todo Id")
+            val user = call.sessions.get<MySession>()?.let { db.findUser(it.userId) }
+            if (user == null) {
+                call.respond(HttpStatusCode.BadRequest, "Problems retrieving User")
+                return@delete
+            }
+
+            try {
+                db.deleteTodo(user.userId, todoId.toInt())
+                call.respond(HttpStatusCode.OK)
+            } catch (e: Throwable) {
+                application.log.error("Failed to delete todo", e)
+                call.respond(HttpStatusCode.BadRequest, "Problems Deleting Todo")
+            }
+        }
+
     }
 }
 
